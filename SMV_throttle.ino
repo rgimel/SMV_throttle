@@ -18,6 +18,7 @@
 
 const int minPulseWidth = 1000; // microseconds
 const int maxPulseWidth = 2000;
+const int rampIncrement = 1;//can be changed to whatever, should experiment to find best value
 
 Servo ESC;
 
@@ -52,21 +53,13 @@ void writeToESC(int throttleRead) {
 
 int lastMotorWrite = 0;
 
-void throttleRamping(int throttleValue) {
-  for (int i = lastMotorWrite; i <= throttleValue; i++) {
-    writeToESC(i);
-    // Serial.println(i);
-    delay(map(i, 0, 1023, 30, 1));
-  }
-}
-
-
 void loop() {
   // Standard Arduino has 10-bit output
   int throttleRead = readThrottle();
 
   if (throttleRead > lastMotorWrite) {
-    throttleRamping(throttleRead);
+    throttleRead += rampIncrement;
+    writetoESC(throttleRead);
   } else {
     writeToESC(throttleRead);
   }
